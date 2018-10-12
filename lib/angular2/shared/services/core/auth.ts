@@ -46,6 +46,7 @@ export class LoopBackAuth {
    **/
   public setRememberMe(value: boolean): void {
     this.token.rememberMe = value;
+    this.save();
   }
   /**
    * @method setUser
