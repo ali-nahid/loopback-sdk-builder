@@ -1,6 +1,7 @@
 /* tslint:disable */
 declare var Object: any;
 import { Injectable, Inject } from '@angular/core';
+import { ApplicationConfig } from '../../../conf/config';
 import { InternalStorage } from '../../storage/storage.swaps';
 import { SDKToken } from '../../models/BaseModels';
 /**
@@ -21,7 +22,7 @@ export class LoopBackAuth {
   /**
    * @type {string}
    **/
-  protected prefix: string = '$LoopBackSDK$';
+  protected prefix: string = ApplicationConfig.projectTokens;
   /**
    * @method constructor
    * @param {InternalStorage} storage Internal Storage Driver
