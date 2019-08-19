@@ -78,6 +78,13 @@ export class LoopBackAuth {
    * This method will set a flag in order to remember the current credentials.
    **/
   public getToken(): SDKToken {
+    // Reload Token from Storage.
+    this.token.id = this.storage.get(this.prefix + 'id');
+    this.token.user = (typeof this.storage.get(this.prefix + 'user') === 'string') ? JSON.parse(this.storage.get(this.prefix + 'user')) : this.storage.get(this.prefix + 'user');
+    this.token.userId = this.storage.get(this.prefix + 'userId');
+    this.token.created = this.storage.get(this.prefix + 'created');
+    this.token.ttl = this.storage.get(this.prefix + 'ttl');
+    this.token.rememberMe = this.storage.get(this.prefix + 'rememberMe');
     return <SDKToken>this.token;
   }
   /**
@@ -87,6 +94,7 @@ export class LoopBackAuth {
    * This method will return the actual token string, not the object instance.
    **/
   public getAccessTokenId(): string {
+    this.token = this.getToken();
     return this.token.id;
   }
   /**
@@ -96,6 +104,7 @@ export class LoopBackAuth {
    * This method will return the current user id, it can be number or string.
    **/
   public getCurrentUserId(): any {
+    this.token = this.getToken();
     return this.token.userId;
   }
   /**
@@ -105,6 +114,7 @@ export class LoopBackAuth {
    * This method will return the current user instance.
    **/
   public getCurrentUserData(): any {
+    this.token = this.getToken();
     return (typeof this.token.user === 'string') ? JSON.parse(this.token.user) : this.token.user;
   }
   /**
@@ -115,15 +125,15 @@ export class LoopBackAuth {
    * But only if rememberMe is enabled.
    **/
   public save(): boolean {
-      let today = new Date();
-      let expires = new Date(today.getTime() + (this.token.ttl * 1000));
-      this.persist('id', this.token.id, expires);
-      this.persist('user', this.token.user, expires);
-      this.persist('userId', this.token.userId, expires);
-      this.persist('created', this.token.created, expires);
-      this.persist('ttl', this.token.ttl, expires);
-      this.persist('rememberMe', this.token.rememberMe, expires);
-      return true;
+    let today = new Date();
+    let expires = new Date(today.getTime() + (this.token.ttl * 1000));
+    this.persist('id', this.token.id, expires);
+    this.persist('user', this.token.user, expires);
+    this.persist('userId', this.token.userId, expires);
+    this.persist('created', this.token.created, expires);
+    this.persist('ttl', this.token.ttl, expires);
+    this.persist('rememberMe', this.token.rememberMe, expires);
+    return true;
   };
   /**
    * @method load
@@ -156,7 +166,7 @@ export class LoopBackAuth {
       this.storage.set(
         `${this.prefix}${prop}`,
         (typeof value === 'object') ? JSON.stringify(value) : value,
-        this.token.rememberMe?expires:null
+        this.token.rememberMe ? expires : null
       );
     }
     catch (err) {
